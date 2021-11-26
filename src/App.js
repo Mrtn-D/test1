@@ -1,21 +1,42 @@
-import { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
+import data from './data.json';
+
+import Header from './Header';
+import ToDoList from './ToDoList';
+import ToDoForm from './ToDoForm';
+
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [color, setColor] = useState('#fff');
 
-  useEffect(() => {
-    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-    setColor(randomColor);
-  }, [count]);
+  const [toDoList, setToDoList] = useState(data);
 
-  console.log(color);
+  const handleToggle = (id) => {
+    let mapped = toDoList.map(task => {
+      return task.id === Number(id) ? { ...task, complete: !task.complete } : { ...task };
+    });
+    setToDoList(mapped);
+  }
+
+  const handleFilter = () => {
+    let filtered = toDoList.filter(task => {
+      return !task.complete;
+    });
+    setToDoList(filtered);
+  }
+
+  const addTask = (userInput) => {
+    let copy = [...toDoList];
+    copy = [...copy, { id: toDoList.length + 1, task: userInput, complete: false }];
+    setToDoList(copy);
+  }
+
+
   return (
-    <div className="App" style={{ backgroundColor: `#${color}`, height: '100vh' }}>
-      <input onChange={(e) => (setCount(e.target.value))} />
-      <h2>{count}</h2>
+    <div className='App'>
+      <Header />
+      <ToDoList toDoList={toDoList} handleToggle={handleToggle} handleFilter={handleFilter} />
+      <ToDoForm addTask={addTask} />
     </div>
   );
 }
